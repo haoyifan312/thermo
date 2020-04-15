@@ -15,7 +15,7 @@ def get_r_q_list(inflow_group):
             subgroup = group[0]
             ngroup = group[1]
             rq[0, i] += groupdata.at[subgroup, 'R']*ngroup
-            rq[1, i] += groupdata.at[subgroup,' Q']*ngroup
+            rq[1, i] += groupdata.at[subgroup, 'Q']*ngroup
     return rq
 
 
