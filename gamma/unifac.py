@@ -1,12 +1,14 @@
 import numpy as np
 import pandas as pd
+import os
 
 
 def get_r_q_list(inflow_group):
     """
     Get list of UNIQUAC r and q parameters for the list of inflow species
     """
-    groupdata_csv = r'.\data\unifac\group_data.csv'
+    cwd = os.getcwd()
+    groupdata_csv = os.path.join(cwd,r'data\unifac\group_data.csv')
     groupdata = pd.read_csv(groupdata_csv, index_col='subgroup')
     spsize = len(inflow_group)
     rq = np.zeros((2, spsize))
