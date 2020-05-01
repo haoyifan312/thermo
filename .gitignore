@@ -3,3 +3,4 @@ venv/
 *.code-workspace
 settings.json
 */__pycache__/
+temp/
