@@ -4,7 +4,7 @@ sys.path.append(os.path.join(cwd,'gamma'))
 sys.path.append(os.path.join(cwd,'test'))
 
 # test UNIQUAC, UNIFAC code
-from unifac import get_group_set, get_r_q_list
+from unifac import get_group_set, rq_from_db
 from uniquac import staverman_guggenheim
 from testHelper import *
 import numpy as np
@@ -20,7 +20,7 @@ water_group = np.array([[16, 1]])
 ethanol_group = np.array([[1, 1], [2, 1], [14, 1]])
 hexane_group = np.array([[1, 2], [2, 4]])
 inflow_group = [water_group, ethanol_group, hexane_group]
-rq = get_r_q_list(inflow_group)
+rq = rq_from_db(inflow_group)
 
 
 def test_rq():
