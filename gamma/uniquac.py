@@ -5,8 +5,8 @@ def staverman_guggenheim(rq, x, pow=1):
     """
     Combinatorial part of UNIQUAC gamma
     """
-    rI = np.power(rq[0,:],pow)
-    qI = np.power(rq[1,:],pow)
+    rI = np.power(rq[0, :], pow)
+    qI = np.power(rq[1, :], pow)
     # phiI/xI and thetaI/xI to avoid divide by 0
     phiI = rI/np.sum(x*rI)
     thetaI = qI/np.sum(x*qI)
@@ -17,9 +17,9 @@ def staverman_guggenheim(rq, x, pow=1):
     return lnGamC
 
 
-def get_tauij(p, T):
+def get_tauij(T, *p):
     """
-    tauij = exp(a + b/T + clnT + dT + e/T^2)
+    tauij = exp-(a + b/T + clnT + dT + e/T^2)
     T - K
     """
     if T <= 0.0:
