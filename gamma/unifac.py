@@ -5,7 +5,7 @@ import csv, sqlite3
 cwd = os.getcwd()
 sys.path.append(os.path.join(cwd,'util'))
 sys.path.append(os.path.join(cwd,'gamma'))
-from util import query_db
+from util import query_db_one, query_db
 from mdb_query import query
 from thermo_common import normalize_array
 
@@ -14,7 +14,10 @@ def query_rq(line):
     # connect to db file
     cwd = os.getcwd()
     db_path = os.path.join(cwd, r'data\UNIFAC.db')
-    rq_data = query_db(db_path, 'SUBGROUP, R, Q', 'GROUP_INFO', f'SUBGROUP IN ({line})')
+    # rq_data = query_db(db_path, 'SUBGROUP, R, Q', 'GROUP_INFO', f'SUBGROUP IN ({line})')
+    rq_data = []
+    for group in line.split(','):
+        rq_data.append(query_db_one(db_path, 'SUBGROUP, R, Q', 'GROUP_INFO', f'SUBGROUP IN ({group})')[0])
 
     # convert from list to dic
     r_dic = {}
@@ -151,6 +154,18 @@ class UNIFAC:
         # query r and q for group set
         self.update_group_rq()
 
+        # query interaction between main groups
+        self.query_interaction()
+
+    def query_interaction(self):
+        s_set = [str(i) for i in self.maingroup_set]
+        line = ','.join(s_set)
+        # connect to db file
+        cwd = os.getcwd()
+        db_path = os.path.join(cwd, r'data\UNIFAC.db')
+        # rq_data = query_db(db_path, 'SUBGROUP, R, Q', 'GROUP_INFO', f'SUBGROUP IN ({line})')
+        self.interaction_list = query_db(db_path, 'MAIN_I, MAIN_J, AIJ, AJI', 'UNIFAC_INTERACTION', f'MAIN_I IN ({line}) AND MAIN_J IN ({line})')
+
     def update_group_rq(self):
         # query r and q for group set
         s_set = [str(i) for i in self.subgrouop_set]
@@ -171,13 +186,16 @@ class UNIFAC:
             fraction = np.array([group[1] for group in groups])
             self.group_fractions.append(normalize_array(fraction))
 
-    def update_x(self, x):
-        """
-        set x vector of species
-        """
+    @property
+    def x(self):
+        "x vector"
+        return self._x
+
+    @x.setter
+    def x(self, x):
         if len(x) != len(self.groups_by_species):
             raise Exception('x list is not the same size as species list')
-        self.x = x
+        return self._x
 
 
 hexane = '110-54-3'
@@ -188,5 +206,5 @@ unif.setup_from_db()
 unif.setup_r_q()
 print(unif.subgroup_list)
 print(unif.maingroup_list)
-print(unif.subgrouop_set)
 print(unif.maingroup_set)
+print(unif.interaction_list)
