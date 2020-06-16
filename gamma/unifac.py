@@ -171,11 +171,6 @@ class UNIFAC:
             fraction = np.array([group[1] for group in groups])
             self.group_fractions.append(normalize_array(fraction))
 
-
-
-
-
-
     def update_x(self, x):
         """
         set x vector of species
@@ -195,6 +190,3 @@ print(unif.subgroup_list)
 print(unif.maingroup_list)
 print(unif.subgrouop_set)
 print(unif.maingroup_set)
-
-        
-        
