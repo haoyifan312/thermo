@@ -1,12 +1,12 @@
-import sys, os
-cwd = os.getcwd()
-sys.path.append(os.path.join(cwd,'gamma'))
-sys.path.append(os.path.join(cwd,'test'))
+# import sys, os
+# cwd = os.getcwd()
+# sys.path.append(os.path.join(cwd,'gamma'))
+# sys.path.append(os.path.join(cwd,'test'))
 
 # test UNIQUAC, UNIFAC code
-from unifac import get_group_set, rq_from_db
-from uniquac import staverman_guggenheim
-from testHelper import *
+from gamma.unifac import get_group_set, rq_from_db
+from gamma.uniquac import staverman_guggenheim
+from tests.testHelper import *
 import numpy as np
 import pytest
 
@@ -31,7 +31,7 @@ def test_rq():
 size = len(inflow_group)
 n = np.ones(size)
 x = n/np.sum(n)
-gamC = staverman_guggenheim(rq, x)
+gamC = staverman_guggenheim(rq[0, :], rq[1, :], x)
 
 
 def test_gamC():
