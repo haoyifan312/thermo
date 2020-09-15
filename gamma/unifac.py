@@ -198,13 +198,13 @@ class UNIFAC:
         return self._x
 
 
-hexane = '110-54-3'
-ethanol = '64-17-5'
-water = '7732-18-5'
-unif = UNIFAC([hexane, ethanol, water])
-unif.setup_from_db()
-unif.setup_r_q()
-print(unif.subgroup_list)
-print(unif.maingroup_list)
-print(unif.maingroup_set)
-print(unif.interaction_list)
+# hexane = '110-54-3'
+# ethanol = '64-17-5'
+# water = '7732-18-5'
+# unif = UNIFAC([hexane, ethanol, water])
+# unif.setup_from_db()
+# unif.setup_r_q()
+# print(unif.subgroup_list)
+# print(unif.maingroup_list)
+# print(unif.maingroup_set)
+# print(unif.interaction_list)

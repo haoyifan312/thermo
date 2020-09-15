@@ -4,12 +4,10 @@
 # sys.path.append(os.path.join(cwd,'test'))
 
 # test UNIQUAC, UNIFAC code
-from gamma.unifac import get_group_set, rq_from_db
-from gamma.uniquac import staverman_guggenheim
-from tests.testHelper import *
+from unifac import get_group_set, rq_from_db
+from uniquac import staverman_guggenheim
+from testHelper import *
 import numpy as np
-import pytest
-
 
 # water
 # ethanol

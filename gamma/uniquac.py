@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def staverman_guggenheim(r, q, x, pow=1):
+def staverman_guggenheim(r: np.array, q: np.array, x: np.array, pow=1):
     """
     Combinatorial part of UNIQUAC gamma
     r - volume parameter
@@ -21,83 +21,65 @@ def staverman_guggenheim(r, q, x, pow=1):
     z = 10
     lI = z/2.0*(rI-qI)-(rI-1.0)
     sumxIlI = np.sum(x*lI)
-    lnGamC = np.log(phiI) + z/2.0*qI*np.log(thetaI/phiI) + lI - phiI*sumxIlI
-    return lnGamC
+    return np.log(phiI) + z/2.0*qI*np.log(thetaI/phiI) + lI - phiI*sumxIlI
 
 
-def get_tauij(T, *p):
+def get_tauij(T: float, p: np.array):
     """
     tauij = exp-(a + b/T + clnT + dT + e/T^2)
-    T - K
+    T - K, float
     """
     if T <= 0.0:
         raise Exception("UNIQUAC tau calculation with infeasible T")
     a = p[0] + p[1]/T + p[2]*np.log(T) + p[3]*T + p[4]/T/T
-    return np.exp(-a/T)
+    return np.exp(a)
 
 
 class UNIQUAC():
-    def __init__(self, size):
+    def __init__(self, size: int, r: np.array, q: np.array, tauij: np.ndarray):
         self.size = size
+        self.x = np.empty(size, dtype=float)
+        self.r = r
+        self.q = q
+        self.tauij = tauij
+        assert r.size == size
+        assert q.size == size
+        assert tauij.shape[0] == size
+        assert tauij.shape[1] == size
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.size})'
 
-    @property
-    def x(self):
-        "mole fraction array"
-        return self._x
+    def normalize_x(self):
+        """
+        normalize x vector
+        :return: void
+        """
+        total = self.x.sum()
+        assert total > 0.0
+        self.x = self.x / total
 
-    @x.setter
-    def x(self, x):
-        if x.size != self.size:
-            raise Exception('UNIQUAC x size inconsistency')
-        self._x = x
-
-    @property
-    def r(self):
-        "volume parameter array"
-        return self._r
-
-    @r.setter
-    def r(self, r):
-        if r.size != self.size:
-            raise Exception('UNIQUAC r size inconsistency')
-        self._r = r
-
-    @property
-    def q(self):
-        "surface area parameter array"
-        return self._q
-
-    @q.setter
-    def q(self, q):
-        if q.size != self.size:
-            raise Exception('UNIQUAC size inconsistency')
-        self._q = q
-
-    @property
-    def tauij(self):
-        "UNIQUAC interaction parameter"
-        return self._tauij
-
-    @tauij.setter
-    def tauij(self, tauij):
-        if tauij.shape(0) != self.size or \
-                tauij.shape(1) != self.size:
-            raise Exception('UNIQUAC size inconsistency')
-        self._tauij = tauij
-            
     def compute(self):
-        if self.size <= 0 or \
-                self.x.size != self.size or \
-                self.r.size != self.size or \
-                self.q.size != self.size:
-            raise Exception('UNIQUAC is not correctly setup')
-
+        """
+        compute UNIQUAC activity coefficients
+        :return: np.array(size)
+        """
+        self.normalize_x()
         # compute combinatorial gamma from Stavernman-Guggenheim
         gammaC = staverman_guggenheim(self.r, self.q, self.x)
 
-
-
+        # start calculate residual term
+        # sumi_xi*qi
+        sumqx = (self.x * self.q).sum()
+        # sumj_xj*qj*tauji
+        sumj_xj_qj_tauji = np.empty(self.size, dtype=float)
+        for i in range(self.size):
+            sumj_xj_qj_tauji[i] = (self.x * self.q * self.tauij[:, i]).sum()
+        # last term in index i
+        last_term = np.empty(self.size, dtype=float)
+        for i in range(self.size):
+            last_term[i] = (self.q * self.x * self.tauij[i, :] / sumj_xj_qj_tauji).sum()
+        # add up
+        gammaR = self.q * (1.0 - np.log(sumj_xj_qj_tauji/sumqx) - last_term)
+        return gammaC + gammaR
         
